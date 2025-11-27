@@ -24,7 +24,8 @@ app.get('/', (req, res) => {
   });
 });
 
-
+app.use('/api/auth', require('./src/routes/authRoutes')); 
+app.use('/api/payments', require('./src/routes/paymentRoutes'));
 app.use('/api/products', require('./src/routes/productRoutes'));
 app.use('/api/sales', require('./src/routes/salesRoutes'));
 app.use('/api/analytics', require('./src/routes/analyticsRoutes'));
