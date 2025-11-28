@@ -1,12 +1,14 @@
 const Sale = require('../models/Sale');
 const Product = require('../models/Product');
+const whatsappService = require('../services/whatsappService');
+const User = require('../models/User');
 
-// Registrar venda
+//registra venda
 exports.createSale = async (req, res) => {
   try {
     const { productId, quantity } = req.body;
 
-    // Buscar o produto
+    //buscar o produto
     const product = await Product.findById(productId);
 
     if (!product) {
@@ -16,7 +18,7 @@ exports.createSale = async (req, res) => {
       });
     }
 
-    // Verificar estoque
+    //verificar estoque
     if (product.stock < quantity) {
       return res.status(400).json({
         success: false,
@@ -24,10 +26,10 @@ exports.createSale = async (req, res) => {
       });
     }
 
-    // Calcular valor total
+    //calcular valor total
     const totalValue = product.price * quantity;
 
-    // Criar venda
+    //criar venda
     const sale = await Sale.create({
       productId,
       quantity,
@@ -39,7 +41,17 @@ exports.createSale = async (req, res) => {
     product.stock -= quantity;
     await product.save();
 
-    // Retornar venda com dados do produto
+    //envia whats 
+const user = await User.findById(req.user?.id);
+if (user && user.plan === 'pro') {
+  await whatsappService.sendSaleNotification(sale, product);
+  
+  if (product.stock <= 10) {
+    await whatsappService.sendLowStockAlert(product);
+  }
+}
+
+    //retornar venda com dados do produto
     const saleWithProduct = await Sale.findById(sale._id).populate('productId');
 
     res.status(201).json({
@@ -54,7 +66,7 @@ exports.createSale = async (req, res) => {
   }
 };
 
-// Listar todas as vendas
+//lista vendas
 exports.getAllSales = async (req, res) => {
   try {
     const sales = await Sale.find().populate('productId');
@@ -72,7 +84,7 @@ exports.getAllSales = async (req, res) => {
   }
 };
 
-// Buscar vendas de um produto específico
+//buscar vendas de um produto específico
 exports.getSalesByProduct = async (req, res) => {
   try {
     const sales = await Sale.find({ productId: req.params.productId }).populate('productId');
@@ -90,7 +102,7 @@ exports.getSalesByProduct = async (req, res) => {
   }
 };
 
-// Buscar vendas por período
+//buscar vendas por período
 exports.getSalesByPeriod = async (req, res) => {
   try {
     const { start, end } = req.query;
