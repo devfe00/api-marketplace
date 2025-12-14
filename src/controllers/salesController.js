@@ -5,6 +5,7 @@ const User = require('../models/User');
 
 //registra venda
 exports.createSale = async (req, res) => {
+
   try {
     const { productId, quantity } = req.body;
 
@@ -41,14 +42,17 @@ exports.createSale = async (req, res) => {
     product.stock -= quantity;
     await product.save();
 
-    //envia whats 
-const user = await User.findById(req.user?.id);
-if (user && user.plan === 'pro') {
+//envia whats 
+try {
   await whatsappService.sendSaleNotification(sale, product);
+  console.log('✅ WhatsApp enviado: Venda -', product.name);
   
   if (product.stock <= 10) {
     await whatsappService.sendLowStockAlert(product);
+    console.log('⚠️ WhatsApp enviado: Estoque baixo -', product.name);
   }
+} catch (error) {
+  console.log('❌ Erro ao enviar WhatsApp:', error.message);
 }
 
     //retornar venda com dados do produto
