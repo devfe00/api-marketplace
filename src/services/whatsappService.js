@@ -5,7 +5,7 @@ const client = twilio(
   process.env.TWILIO_AUTH_TOKEN
 );
 
-//notificação -estoque baixo
+//notificação -estoque
 exports.sendLowStockAlert = async (product) => {
   try {
     await client.messages.create({
@@ -44,5 +44,18 @@ exports.sendDailySummary = async (stats) => {
     console.log(`✅ WhatsApp enviado: Resumo diário`);
   } catch (error) {
     console.error('Erro ao enviar WhatsApp:', error);
+  }
+};
+
+exports.sendCustomerConfirmation = async (sale, product, customerPhone) => {
+  try {
+    await client.messages.create({
+      from: process.env.TWILIO_WHATSAPP_NUMBER,
+      to: `whatsapp:${customerPhone}`, // ← Número do cliente
+      body: `✅ *COMPRA CONFIRMADA!*\n\nProduto: ${product.name}\nQuantidade: ${sale.quantity}\nValor: R$ ${sale.totalValue.toFixed(2)}\n\nObrigado pela compra! 🎉`,
+    });
+    console.log(`✅ WhatsApp enviado para cliente: ${customerPhone}`);
+  } catch (error) {
+    console.error('Erro ao enviar WhatsApp para cliente:', error);
   }
 };

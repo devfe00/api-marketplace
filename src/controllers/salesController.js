@@ -47,6 +47,12 @@ try {
   await whatsappService.sendSaleNotification(sale, product);
   console.log('✅ WhatsApp enviado: Venda -', product.name);
   
+  const user = await User.findById(req.user?.id);
+  if (user && user.phone) {
+    await whatsappService.sendCustomerConfirmation(sale, product, user.phone);
+    console.log('✅ WhatsApp enviado para cliente:', user.phone);
+  }
+  
   if (product.stock <= 10) {
     await whatsappService.sendLowStockAlert(product);
     console.log('⚠️ WhatsApp enviado: Estoque baixo -', product.name);
@@ -55,7 +61,6 @@ try {
   console.log('❌ Erro ao enviar WhatsApp:', error.message);
 }
 
-    //retornar venda com dados do produto
     const saleWithProduct = await Sale.findById(sale._id).populate('productId');
 
     res.status(201).json({

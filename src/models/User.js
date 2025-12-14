@@ -18,6 +18,10 @@ const userSchema = new mongoose.Schema({
     minlength: 6,
     select: false,
   },
+   phone: {  
+    type: String,
+    default: null
+  },
   plan: {
     type: String,
     enum: ['free', 'starter', 'growth', 'pro'],

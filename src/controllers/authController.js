@@ -11,7 +11,7 @@ const generateToken = (id) => {
 // Cadastro
 exports.register = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, phone } = req.body;
 
     // Verificar se email já existe
     const userExists = await User.findOne({ email });
@@ -27,6 +27,7 @@ exports.register = async (req, res) => {
       name,
       email,
       password,
+      phone,
       plan: 'free',
       planLimits: {
         maxProducts: 10, // Plano free: 10 produtos
