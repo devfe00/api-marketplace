@@ -37,10 +37,3 @@ exports.updatePhone = async (req, res) => {
     });
   }
 };
-```
-
----
-
-## 2️⃣ CRIA O ARQUIVO:
-```
-src/routes/userRoutes.js
