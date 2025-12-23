@@ -40,6 +40,7 @@ app.use('/api/sales', require('./src/routes/salesRoutes'));
 app.use('/api/analytics', require('./src/routes/analyticsRoutes'));
 app.use('/api/notifications', require('./src/routes/notificationRoutes'));
 app.use('/api/users', userRoutes);
+app.use('/api/password', require('./src/routes/passwordRoutes'));
 
 app.listen(PORT, () => {
   console.log(`🚀 Servidor rodando na porta ${PORT}`);

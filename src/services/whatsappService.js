@@ -59,3 +59,16 @@ exports.sendCustomerConfirmation = async (sale, product, customerPhone) => {
     console.error('Erro ao enviar WhatsApp para cliente:', error);
   }
 };
+
+exports.sendPasswordResetCode = async (phone, code) => {
+  try {
+    await client.messages.create({
+      from: process.env.TWILIO_WHATSAPP_NUMBER,
+      to: `whatsapp:${phone}`,
+      body: `🔐 *RECUPERAÇÃO DE SENHA*\n\nSeu código de verificação é: ${code}\n\nO código expira em 10 minutos.\n\nSe você não solicitou isso, ignore esta mensagem.`,
+    });
+    console.log(`✅ Código de recuperação enviado: ${phone}`);
+  } catch (error) {
+    console.error('Erro ao enviar código:', error);
+  }
+};

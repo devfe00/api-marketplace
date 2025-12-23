@@ -22,6 +22,14 @@ const userSchema = new mongoose.Schema({
   type: String,
   required: [true, 'Telefone é obrigatório']
 },
+resetPasswordToken: {
+  type: String,
+  default: null
+},
+resetPasswordExpires: {
+  type: Date,
+  default: null
+},
   plan: {
     type: String,
     enum: ['free', 'starter', 'growth', 'pro'],
