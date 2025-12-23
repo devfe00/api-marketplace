@@ -1,19 +1,27 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
+const { validatePhone } = require('../utils/validators');
 
-// Gerar JWT Token
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET || 'seu-secret-super-seguro', {
     expiresIn: '7d',
   });
 };
 
-// Cadastro
 exports.register = async (req, res) => {
   try {
     const { name, email, password, phone } = req.body;
 
-    // Verificar se email já existe
+if (phone) {
+  const phoneValidation = validatePhone(phone);
+  if (!phoneValidation.valid) {
+    return res.status(400).json({
+      success: false,
+      error: phoneValidation.message
+    });
+  }
+}
+
     const userExists = await User.findOne({ email });
     if (userExists) {
       return res.status(400).json({
@@ -22,7 +30,6 @@ exports.register = async (req, res) => {
       });
     }
 
-    // Criar usuário
     const user = await User.create({
       name,
       email,
@@ -30,11 +37,10 @@ exports.register = async (req, res) => {
       phone,
       plan: 'free',
       planLimits: {
-        maxProducts: 10, // Plano free: 10 produtos
+        maxProducts: 10, 
       },
     });
 
-    // Gerar token
     const token = generateToken(user._id);
 
     res.status(201).json({
@@ -55,12 +61,10 @@ exports.register = async (req, res) => {
   }
 };
 
-// Login
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Verificar se email e senha foram fornecidos
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -68,7 +72,6 @@ exports.login = async (req, res) => {
       });
     }
 
-    // Buscar usuário com senha
     const user = await User.findOne({ email }).select('+password');
 
     if (!user || !(await user.comparePassword(password))) {
@@ -78,7 +81,6 @@ exports.login = async (req, res) => {
       });
     }
 
-    // Gerar token
     const token = generateToken(user._id);
 
     res.status(200).json({
@@ -100,7 +102,6 @@ exports.login = async (req, res) => {
   }
 };
 
-// Ver perfil do usuário logado
 exports.getMe = async (req, res) => {
   try {
     const user = await User.findById(req.user.id);

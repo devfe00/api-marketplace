@@ -19,9 +19,9 @@ const userSchema = new mongoose.Schema({
     select: false,
   },
    phone: {  
-    type: String,
-    default: null
-  },
+  type: String,
+  required: [true, 'Telefone é obrigatório']
+},
   plan: {
     type: String,
     enum: ['free', 'starter', 'growth', 'pro'],

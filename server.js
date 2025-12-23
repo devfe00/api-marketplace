@@ -1,5 +1,6 @@
 const dotenv = require('dotenv');
 const path = require('path');
+const userRoutes = require('./src/routes/userRoutes');
 
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
@@ -38,6 +39,7 @@ app.use('/api/products', require('./src/routes/productRoutes'));
 app.use('/api/sales', require('./src/routes/salesRoutes'));
 app.use('/api/analytics', require('./src/routes/analyticsRoutes'));
 app.use('/api/notifications', require('./src/routes/notificationRoutes'));
+app.use('/api/users', userRoutes);
 
 app.listen(PORT, () => {
   console.log(`🚀 Servidor rodando na porta ${PORT}`);
